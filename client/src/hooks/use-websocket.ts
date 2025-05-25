@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 interface WebSocketMessage {
-  type: "clip_revoked" | "clip_expired";
+  type: "clip_revoked" | "clip_expired" | "connection_established";
   clipId: string;
+  connectionId?: string;
+  timestamp?: string;
 }
 
 export function useWebSocket(clipId: string | null, onClipInvalidated?: () => void) {
@@ -29,9 +31,12 @@ export function useWebSocket(clipId: string | null, onClipInvalidated?: () => vo
         wsRef.current.onmessage = (event) => {
           try {
             const message: WebSocketMessage = JSON.parse(event.data);
+            console.log("Received WebSocket message:", message);
             
-            if (message.type === "clip_revoked" || message.type === "clip_expired") {
-              console.log(`Clip ${message.type}:`, message.clipId);
+            if (message.type === "connection_established") {
+              console.log(`WebSocket connection established for clip ${message.clipId}`);
+            } else if (message.type === "clip_revoked" || message.type === "clip_expired") {
+              console.log(`Clip ${message.type}:`, message.clipId, "at", message.timestamp);
               onClipInvalidated?.();
             }
           } catch (error) {

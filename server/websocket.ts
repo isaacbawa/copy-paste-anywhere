@@ -4,6 +4,7 @@ import { Server } from "http";
 interface ClientConnection {
   ws: any;
   clipId: string;
+  connectionId: string;
 }
 
 class WebSocketManager {
@@ -27,14 +28,15 @@ class WebSocketManager {
         this.clients.set(clipId, []);
       }
       
-      const client: ClientConnection = { ws, clipId };
+      const connectionId = Math.random().toString(36).substring(7);
+      const client: ClientConnection = { ws, clipId, connectionId };
       this.clients.get(clipId)!.push(client);
 
-      console.log(`Client connected for clip: ${clipId}`);
+      console.log(`WebSocket client connected for clip: ${clipId} (${connectionId})`);
 
       ws.on("close", () => {
         this.removeClient(clipId, client);
-        console.log(`Client disconnected for clip: ${clipId}`);
+        console.log(`WebSocket client disconnected for clip: ${clipId} (${connectionId})`);
       });
 
       ws.on("error", (error) => {
@@ -54,6 +56,13 @@ class WebSocketManager {
       ws.on("close", () => {
         clearInterval(pingInterval);
       });
+
+      // Send initial connection confirmation
+      ws.send(JSON.stringify({
+        type: "connection_established",
+        clipId,
+        connectionId
+      }));
     });
   }
 
@@ -71,34 +80,50 @@ class WebSocketManager {
   }
 
   notifyClipRevoked(clipId: string) {
+    console.log(`Notifying clients that clip ${clipId} was revoked`);
     const clients = this.clients.get(clipId);
-    if (clients) {
+    if (clients && clients.length > 0) {
+      console.log(`Found ${clients.length} connected clients for clip ${clipId}`);
       clients.forEach(client => {
         if (client.ws.readyState === client.ws.OPEN) {
+          console.log(`Sending revoke notification to client ${client.connectionId}`);
           client.ws.send(JSON.stringify({
             type: "clip_revoked",
-            clipId
+            clipId,
+            timestamp: new Date().toISOString()
           }));
+        } else {
+          console.log(`Client ${client.connectionId} connection is not open`);
         }
       });
       // Clean up connections for this clip
       this.clients.delete(clipId);
+    } else {
+      console.log(`No clients found for clip ${clipId}`);
     }
   }
 
   notifyClipExpired(clipId: string) {
+    console.log(`Notifying clients that clip ${clipId} expired`);
     const clients = this.clients.get(clipId);
-    if (clients) {
+    if (clients && clients.length > 0) {
+      console.log(`Found ${clients.length} connected clients for clip ${clipId}`);
       clients.forEach(client => {
         if (client.ws.readyState === client.ws.OPEN) {
+          console.log(`Sending expiry notification to client ${client.connectionId}`);
           client.ws.send(JSON.stringify({
             type: "clip_expired",
-            clipId
+            clipId,
+            timestamp: new Date().toISOString()
           }));
+        } else {
+          console.log(`Client ${client.connectionId} connection is not open`);
         }
       });
       // Clean up connections for this clip
       this.clients.delete(clipId);
+    } else {
+      console.log(`No clients found for clip ${clipId}`);
     }
   }
 }
