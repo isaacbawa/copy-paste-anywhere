@@ -20,12 +20,13 @@ export function useWebSocket(clipId: string | null, onClipInvalidated?: () => vo
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
         const wsUrl = `${protocol}//${window.location.host}/ws?clipId=${clipId}`;
         
+        console.log("Attempting to connect to WebSocket:", wsUrl);
         wsRef.current = new WebSocket(wsUrl);
         setConnectionStatus("connecting");
 
         wsRef.current.onopen = () => {
           setConnectionStatus("connected");
-          console.log("WebSocket connected for clip:", clipId);
+          console.log("✅ WebSocket connection opened successfully for clip:", clipId);
         };
 
         wsRef.current.onmessage = (event) => {

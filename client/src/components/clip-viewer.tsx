@@ -22,7 +22,8 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
   const clipId = window.location.pathname.split('/clip/')[1];
   
   // Set up WebSocket connection for real-time updates
-  useWebSocket(clipId, () => {
+  const connectionStatus = useWebSocket(clipId, () => {
+    console.log("Clip invalidated callback triggered!");
     setIsClipInvalidated(true);
     toast({
       title: "Clip No Longer Available",
@@ -30,6 +31,8 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
       variant: "destructive",
     });
   });
+
+  console.log("WebSocket connection status:", connectionStatus, "for clip:", clipId);
 
   const copyToClipboard = () => {
     if (isClipInvalidated) {

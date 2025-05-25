@@ -34,6 +34,51 @@ export default function QRCode({ text, size = 200 }: QRCodeProps) {
     }
   }, [text, size]);
 
+  const downloadQRCode = () => {
+    if (!qrCodeDataUrl) return;
+    
+    const link = document.createElement('a');
+    link.download = 'clipboard-qr-code.png';
+    link.href = qrCodeDataUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const shareQRCode = async () => {
+    if (!qrCodeDataUrl) return;
+
+    try {
+      // Convert data URL to blob
+      const response = await fetch(qrCodeDataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], 'clipboard-qr-code.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: 'Clipboard QR Code',
+          text: 'Scan this QR code to access the shared text',
+          files: [file]
+        });
+      } else {
+        // Fallback: copy to clipboard
+        if (navigator.clipboard && 'write' in navigator.clipboard) {
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob })
+          ]);
+          // Show success message if needed
+        } else {
+          // Final fallback: download
+          downloadQRCode();
+        }
+      }
+    } catch (error) {
+      console.error('Error sharing QR code:', error);
+      // Fallback to download
+      downloadQRCode();
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -56,6 +101,7 @@ export default function QRCode({ text, size = 200 }: QRCodeProps) {
                 src={qrCodeDataUrl} 
                 alt="QR Code" 
                 className="w-48 h-48"
+                id="qr-code-image"
               />
             ) : (
               <div className="w-48 h-48 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
@@ -66,9 +112,32 @@ export default function QRCode({ text, size = 200 }: QRCodeProps) {
               </div>
             )}
           </div>
+          
           <p className="text-sm text-gray-600 text-center max-w-xs">
             Scan this QR code with your phone to open the link
           </p>
+
+          {/* Action Buttons */}
+          {qrCodeDataUrl && (
+            <div className="flex gap-2 w-full">
+              <Button
+                onClick={downloadQRCode}
+                variant="outline"
+                className="flex-1 text-sm py-2"
+              >
+                <span className="material-icons text-sm mr-1">download</span>
+                Download
+              </Button>
+              <Button
+                onClick={shareQRCode}
+                variant="outline"
+                className="flex-1 text-sm py-2"
+              >
+                <span className="material-icons text-sm mr-1">share</span>
+                Share
+              </Button>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

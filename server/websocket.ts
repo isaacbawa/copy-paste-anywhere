@@ -19,6 +19,7 @@ class WebSocketManager {
       const clipId = url.searchParams.get("clipId");
       
       if (!clipId) {
+        console.log("WebSocket connection rejected: Missing clipId");
         ws.close(1008, "Missing clipId");
         return;
       }
@@ -32,22 +33,39 @@ class WebSocketManager {
       const client: ClientConnection = { ws, clipId, connectionId };
       this.clients.get(clipId)!.push(client);
 
-      console.log(`WebSocket client connected for clip: ${clipId} (${connectionId})`);
+      console.log(`✅ WebSocket client connected for clip: ${clipId} (${connectionId})`);
+      console.log(`📊 Total clients for clip ${clipId}: ${this.clients.get(clipId)!.length}`);
+
+      // Send initial connection confirmation immediately
+      if (ws.readyState === ws.OPEN) {
+        ws.send(JSON.stringify({
+          type: "connection_established",
+          clipId,
+          connectionId,
+          timestamp: new Date().toISOString()
+        }));
+        console.log(`📤 Sent connection confirmation to ${connectionId}`);
+      }
 
       ws.on("close", () => {
         this.removeClient(clipId, client);
-        console.log(`WebSocket client disconnected for clip: ${clipId} (${connectionId})`);
+        console.log(`❌ WebSocket client disconnected for clip: ${clipId} (${connectionId})`);
       });
 
       ws.on("error", (error) => {
-        console.error("WebSocket error:", error);
+        console.error("🚨 WebSocket error:", error);
         this.removeClient(clipId, client);
+      });
+
+      ws.on("pong", () => {
+        console.log(`💓 Pong received from ${connectionId}`);
       });
 
       // Send ping every 30 seconds to keep connection alive
       const pingInterval = setInterval(() => {
         if (ws.readyState === ws.OPEN) {
           ws.ping();
+          console.log(`📡 Ping sent to ${connectionId}`);
         } else {
           clearInterval(pingInterval);
         }
@@ -56,13 +74,6 @@ class WebSocketManager {
       ws.on("close", () => {
         clearInterval(pingInterval);
       });
-
-      // Send initial connection confirmation
-      ws.send(JSON.stringify({
-        type: "connection_established",
-        clipId,
-        connectionId
-      }));
     });
   }
 
