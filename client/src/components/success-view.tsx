@@ -123,6 +123,7 @@ export default function SuccessView({ clipId, expiresAt, onCreateNew }: SuccessV
                 <span className="material-icons text-sm">content_copy</span>
                 <span className="hidden sm:inline">Copy</span>
               </Button>
+              <QRCode text={generatedLink} />
             </div>
           </div>
 
