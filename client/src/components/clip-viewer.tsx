@@ -24,11 +24,6 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
   // Set up real-time clip invalidation checking
   useClipInvalidation(clipId, () => {
     setIsClipInvalidated(true);
-    toast({
-      title: "Clip No Longer Available",
-      description: "This clip has been revoked or expired.",
-      variant: "destructive",
-    });
   });
 
   const copyToClipboard = () => {
@@ -85,11 +80,16 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Shared Content</label>
                 {isClipInvalidated ? (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 min-h-40 flex items-center justify-center">
-                    <div className="text-center text-red-600">
-                      <span className="material-icons text-3xl mb-2 block">block</span>
-                      <p className="font-medium">This clip is no longer available</p>
-                      <p className="text-sm mt-1">It has been revoked or expired</p>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-6 min-h-40 flex items-center justify-center">
+                    <div className="text-center text-red-600 max-w-md">
+                      <span className="material-icons text-4xl mb-3 block">block</span>
+                      <p className="font-semibold text-lg mb-2">This clip is no longer available</p>
+                      <p className="text-sm mb-4">It has been revoked by the owner or has expired</p>
+                      
+                      <div className="space-y-2 text-sm text-gray-600">
+                        <p>• Contact the owner for a new link</p>
+                        <p>• Create your own clip for free below</p>
+                      </div>
                     </div>
                   </div>
                 ) : (
