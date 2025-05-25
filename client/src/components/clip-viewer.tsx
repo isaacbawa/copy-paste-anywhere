@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import useCountdown from "@/hooks/use-countdown";
+import { useWebSocket } from "@/hooks/use-websocket";
 import StrategicAd from "./strategic-ad";
 
 interface ClipViewerProps {
@@ -12,10 +14,33 @@ interface ClipViewerProps {
 }
 
 export default function ClipViewer({ clip }: ClipViewerProps) {
+  const [isClipInvalidated, setIsClipInvalidated] = useState(false);
   const { toast } = useToast();
   const timeRemaining = useCountdown(new Date(clip.expiresAt));
+  
+  // Extract clip ID from current URL
+  const clipId = window.location.pathname.split('/clip/')[1];
+  
+  // Set up WebSocket connection for real-time updates
+  useWebSocket(clipId, () => {
+    setIsClipInvalidated(true);
+    toast({
+      title: "Clip No Longer Available",
+      description: "This clip has been revoked or expired.",
+      variant: "destructive",
+    });
+  });
 
   const copyToClipboard = () => {
+    if (isClipInvalidated) {
+      toast({
+        title: "Error",
+        description: "This clip is no longer available.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     navigator.clipboard.writeText(clip.content).then(() => {
       toast({
         title: "Success",
@@ -59,18 +84,29 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
               {/* Clip Text Display */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Shared Content</label>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 min-h-40">
-                  <pre className="whitespace-pre-wrap font-sans text-gray-900">{clip.content}</pre>
-                </div>
+                {isClipInvalidated ? (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 min-h-40 flex items-center justify-center">
+                    <div className="text-center text-red-600">
+                      <span className="material-icons text-3xl mb-2 block">block</span>
+                      <p className="font-medium">This clip is no longer available</p>
+                      <p className="text-sm mt-1">It has been revoked or expired</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 min-h-40">
+                    <pre className="whitespace-pre-wrap font-sans text-gray-900">{clip.content}</pre>
+                  </div>
+                )}
               </div>
 
               {/* Copy Button */}
               <Button 
                 onClick={copyToClipboard}
-                className="w-full bg-primary hover:bg-blue-700 text-white py-3 px-4 transition-all flex items-center justify-center gap-2"
+                disabled={isClipInvalidated}
+                className="w-full bg-primary hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-3 px-4 transition-all flex items-center justify-center gap-2"
               >
                 <span className="material-icons">content_copy</span>
-                Copy Text to Clipboard
+                {isClipInvalidated ? "Clip Not Available" : "Copy Text to Clipboard"}
               </Button>
 
               {/* Expiry Info */}

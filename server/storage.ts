@@ -79,12 +79,15 @@ export class MemStorage implements IStorage {
     let deletedCount = 0;
     
     const expiredIds: string[] = [];
-    this.clips.forEach((clip, id) => {
+    
+    // Check for expired clips
+    for (const [id, clip] of Array.from(this.clips.entries())) {
       if (now > clip.expiresAt) {
         expiredIds.push(id);
       }
-    });
+    }
     
+    // Remove expired clips and notify clients
     expiredIds.forEach(id => {
       this.clips.delete(id);
       deletedCount++;
