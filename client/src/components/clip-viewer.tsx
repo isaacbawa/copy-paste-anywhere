@@ -107,12 +107,14 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
               </Button>
 
               {/* Expiry Info */}
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <div className="flex items-center gap-2 text-amber-700">
-                  <span className="material-icons text-sm">schedule</span>
-                  <span className="text-sm">This clip expires in: <span>{timeRemaining}</span></span>
+              {!isClipInvalidated && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <span className="material-icons text-sm">schedule</span>
+                    <span className="text-sm">This clip expires in: <span>{timeRemaining}</span></span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
