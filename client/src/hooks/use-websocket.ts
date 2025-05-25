@@ -1,90 +1,46 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-interface WebSocketMessage {
-  type: "clip_revoked" | "clip_expired" | "connection_established";
-  clipId: string;
-  connectionId?: string;
-  timestamp?: string;
-}
-
-export function useWebSocket(clipId: string | null, onClipInvalidated?: () => void) {
-  const [connectionStatus, setConnectionStatus] = useState<"connecting" | "connected" | "disconnected">("disconnected");
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+export function useClipInvalidation(clipId: string | null, onClipInvalidated?: () => void) {
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!clipId) return;
 
-    const connect = () => {
+    const checkClipStatus = async () => {
       try {
-        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const wsUrl = `${protocol}//${window.location.host}/ws?clipId=${clipId}`;
+        const response = await fetch(`/api/clips/${clipId}`);
         
-        console.log("Attempting to connect to WebSocket:", wsUrl);
-        wsRef.current = new WebSocket(wsUrl);
-        setConnectionStatus("connecting");
-
-        wsRef.current.onopen = () => {
-          setConnectionStatus("connected");
-          console.log("✅ WebSocket connection opened successfully for clip:", clipId);
-        };
-
-        wsRef.current.onmessage = (event) => {
-          try {
-            const message: WebSocketMessage = JSON.parse(event.data);
-            console.log("Received WebSocket message:", message);
-            
-            if (message.type === "connection_established") {
-              console.log(`WebSocket connection established for clip ${message.clipId}`);
-            } else if (message.type === "clip_revoked" || message.type === "clip_expired") {
-              console.log(`Clip ${message.type}:`, message.clipId, "at", message.timestamp);
-              onClipInvalidated?.();
-            }
-          } catch (error) {
-            console.error("Error parsing WebSocket message:", error);
-          }
-        };
-
-        wsRef.current.onclose = () => {
-          setConnectionStatus("disconnected");
-          console.log("WebSocket disconnected for clip:", clipId);
+        if (!response.ok) {
+          // Clip is no longer available (revoked or expired)
+          onClipInvalidated?.();
           
-          // Auto-reconnect after 3 seconds
-          if (reconnectTimeoutRef.current) {
-            clearTimeout(reconnectTimeoutRef.current);
+          // Stop polling once invalidated
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current);
+            pollingRef.current = null;
           }
-          
-          reconnectTimeoutRef.current = setTimeout(() => {
-            if (clipId) {
-              connect();
-            }
-          }, 3000);
-        };
-
-        wsRef.current.onerror = (error) => {
-          console.error("WebSocket error:", error);
-          setConnectionStatus("disconnected");
-        };
-
+        }
       } catch (error) {
-        console.error("Error creating WebSocket connection:", error);
-        setConnectionStatus("disconnected");
+        // Network error or server down - clip might be unavailable
+        onClipInvalidated?.();
+        
+        if (pollingRef.current) {
+          clearInterval(pollingRef.current);
+          pollingRef.current = null;
+        }
       }
     };
 
-    connect();
+    // Check immediately
+    checkClipStatus();
+
+    // Then poll every 2 seconds
+    pollingRef.current = setInterval(checkClipStatus, 2000);
 
     return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
       }
     };
   }, [clipId, onClipInvalidated]);
-
-  return connectionStatus;
 }

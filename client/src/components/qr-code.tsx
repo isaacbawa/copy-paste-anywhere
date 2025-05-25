@@ -121,7 +121,7 @@ export default function QRCode({ text, size = 200 }: QRCodeProps) {
           {qrCodeDataUrl && (
             <div className="flex gap-2 w-full">
               <Button
-                onClick={downloadQRCode}
+                onClick={() => downloadQRCode()}
                 variant="outline"
                 className="flex-1 text-sm py-2"
               >
@@ -129,7 +129,7 @@ export default function QRCode({ text, size = 200 }: QRCodeProps) {
                 Download
               </Button>
               <Button
-                onClick={shareQRCode}
+                onClick={() => shareQRCode()}
                 variant="outline"
                 className="flex-1 text-sm py-2"
               >

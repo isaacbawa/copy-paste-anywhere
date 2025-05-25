@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import useCountdown from "@/hooks/use-countdown";
-import { useWebSocket } from "@/hooks/use-websocket";
+import { useClipInvalidation } from "@/hooks/use-websocket";
 import StrategicAd from "./strategic-ad";
 
 interface ClipViewerProps {
@@ -21,9 +21,8 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
   // Extract clip ID from current URL
   const clipId = window.location.pathname.split('/clip/')[1];
   
-  // Set up WebSocket connection for real-time updates
-  const connectionStatus = useWebSocket(clipId, () => {
-    console.log("Clip invalidated callback triggered!");
+  // Set up real-time clip invalidation checking
+  useClipInvalidation(clipId, () => {
     setIsClipInvalidated(true);
     toast({
       title: "Clip No Longer Available",
@@ -31,8 +30,6 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
       variant: "destructive",
     });
   });
-
-  console.log("WebSocket connection status:", connectionStatus, "for clip:", clipId);
 
   const copyToClipboard = () => {
     if (isClipInvalidated) {

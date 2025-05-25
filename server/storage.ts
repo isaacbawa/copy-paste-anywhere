@@ -1,6 +1,5 @@
 import { clips, type Clip, type InsertClip } from "@shared/schema";
 import { nanoid } from "nanoid";
-import { wsManager } from "./websocket";
 
 export interface IStorage {
   createClip(clip: InsertClip): Promise<{ id: string; clip: Clip }>;
@@ -87,12 +86,10 @@ export class MemStorage implements IStorage {
       }
     }
     
-    // Remove expired clips and notify clients
+    // Remove expired clips
     expiredIds.forEach(id => {
       this.clips.delete(id);
       deletedCount++;
-      // Notify all connected clients that this clip has expired
-      wsManager.notifyClipExpired(id);
     });
     
     return deletedCount;
