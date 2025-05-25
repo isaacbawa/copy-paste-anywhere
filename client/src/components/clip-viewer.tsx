@@ -28,11 +28,7 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
 
   const copyToClipboard = () => {
     if (isClipInvalidated) {
-      toast({
-        title: "Error",
-        description: "This clip is no longer available.",
-        variant: "destructive",
-      });
+      // Don't show any popup - the page already shows the clip is unavailable
       return;
     }
 
@@ -89,6 +85,7 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
                       <div className="space-y-2 text-sm text-gray-600">
                         <p>• Contact the owner for a new link</p>
                         <p>• Create your own clip for free below</p>
+                        <p>• All clips are temporary and secure</p>
                       </div>
                     </div>
                   </div>
@@ -122,12 +119,12 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
           {/* Create Your Own Clip */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
             <h3 className="font-semibold text-gray-900 mb-2">Need to share text too?</h3>
-            <p className="text-gray-600 text-sm mb-3">Create your own clip to transfer text to another device</p>
+            <p className="text-gray-600 text-sm mb-3">Create your own secure, temporary clip for free</p>
             <Button 
               onClick={goToCreate}
               className="bg-primary hover:bg-blue-700 text-white py-2 px-4 transition-all text-sm"
             >
-              Create New Clip
+              Create New Clip For Free
             </Button>
           </div>
 
