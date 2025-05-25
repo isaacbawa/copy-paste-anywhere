@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertClipSchema } from "@shared/schema";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { wsManager } from "./websocket";
 
 const createClipRequestSchema = z.object({
   content: z.string().min(1, "Content cannot be empty").max(50000, "Content too large"),
@@ -129,6 +130,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Clip not found",
         });
       }
+
+      // Notify all connected clients that this clip has been revoked
+      wsManager.notifyClipRevoked(id);
       
       res.json({
         success: true,
