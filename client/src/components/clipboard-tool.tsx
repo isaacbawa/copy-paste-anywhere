@@ -9,6 +9,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import SuccessView from "./success-view";
 import StrategicAd from "./strategic-ad";
+import PromoBanner from "./nonintrusiveAds/promobanner";
+import AppInstallBanner from "./nonintrusiveAds/promo-2";
 
 type ExpiryDuration = "2min" | "5min" | "10min" | "1hour" | "24hour" | "custom";
 
@@ -82,14 +84,14 @@ export default function ClipboardTool() {
   if (generatedClip) {
     return (
       <div className="space-y-6">
-        <SuccessView 
+        <SuccessView
           clipId={generatedClip.id}
           expiresAt={generatedClip.expiresAt}
           onCreateNew={handleCreateNewClip}
         />
-        
+
         {/* Strategic Ad Placement 2 */}
-        <StrategicAd 
+        <StrategicAd
           title="Strategic Product Showcase Area #2"
           subtitle="Complementary tools or services"
         />
@@ -103,10 +105,18 @@ export default function ClipboardTool() {
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">Share Text Instantly Across Devices</h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Copy text on one device, get a private link, and paste it anywhere else. 
-          No signup required. Secure, temporary, and completely private.
+          Copy text on one device, get a private link, and paste it anywhere else.
+          No signup required. Secure, completely private and free.
         </p>
       </div>
+
+      <PromoBanner />
+
+      {/* Strategic Ad Placement 1
+      <StrategicAd
+        title="Strategic Product Showcase Area #1"
+        subtitle="Non-intrusive promotional content placeholder"
+      /> */}
 
       {/* Main Input Card */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
@@ -116,8 +126,8 @@ export default function ClipboardTool() {
             <Label htmlFor="clipText" className="block text-sm font-medium text-gray-700 mb-2">
               Enter or paste your text
             </Label>
-            <Textarea 
-              id="clipText" 
+            <Textarea
+              id="clipText"
               value={clipText}
               onChange={(e) => setClipText(e.target.value)}
               placeholder="Type or paste the text you want to share..."
@@ -156,8 +166,8 @@ export default function ClipboardTool() {
                 <Label htmlFor="customTime" className="block text-sm font-medium text-gray-700 mb-2">
                   Custom expiry
                 </Label>
-                <Input 
-                  type="datetime-local" 
+                <Input
+                  type="datetime-local"
                   id="customTime"
                   value={customExpiry}
                   onChange={(e) => setCustomExpiry(e.target.value)}
@@ -168,7 +178,7 @@ export default function ClipboardTool() {
           </div>
 
           {/* Generate Link Button */}
-          <Button 
+          <Button
             onClick={handleGenerateLink}
             disabled={!clipText.trim() || createClipMutation.isPending}
             className="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 px-6 transition-all duration-200 flex items-center justify-center gap-2"
