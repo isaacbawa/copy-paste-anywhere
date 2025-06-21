@@ -1,7 +1,6 @@
 import ClipboardTool from "@/components/clipboard-tool";
 import Footer from "@/components/footer";
-import NewsletterBanner from "@/components/nonintrusiveAds/newsletter-banner";
-import StrategicAd from "@/components/strategic-ad";
+import PromoBanner from "@/components/nonintrusiveAds/promobanner";
 
 export default function Home() {
   return (
@@ -20,7 +19,7 @@ export default function Home() {
 
         <ClipboardTool />
 
-        <NewsletterBanner />
+        <PromoBanner />
 
         {/* Strategic Ad Placement 1
         <StrategicAd
@@ -35,7 +34,7 @@ export default function Home() {
               <span className="material-icons text-primary">security</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">Private & Secure</h3>
-            <p className="text-gray-600 text-sm">Strong random links that are impossible to guess. Your data expires automatically.</p>
+            <p className="text-gray-600 text-sm">Strong dynamic links that are impossible to guess. Your data expires automatically.</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -62,7 +61,7 @@ export default function Home() {
 
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

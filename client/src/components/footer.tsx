@@ -28,7 +28,7 @@ export default function Footer() {
               </h4>
               <p className="text-xs text-gray-600 leading-relaxed">
                 CopyandPasteAnywhere respects your privacy. We don't store personal information, track users, or keep your text longer than necessary.
-                All clips are temporary and automatically deleted after expiry. Links use strong random generation for security.
+                All clips are temporary and automatically deleted after expiry. Links use strong dynamic generation for security.
               </p>
             </div>
 

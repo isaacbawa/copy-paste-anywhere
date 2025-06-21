@@ -22,7 +22,7 @@ export class MemStorage implements IStorage {
   async createClip(insertClip: InsertClip): Promise<{ id: string; clip: Clip }> {
     // Generate strong random ID (24 characters)
     const id = nanoid(24);
-    
+
     const clip: Clip = {
       id,
       content: insertClip.content,
@@ -30,45 +30,45 @@ export class MemStorage implements IStorage {
       isRevoked: "false",
       createdAt: new Date(),
     };
-    
+
     this.clips.set(id, clip);
     return { id, clip };
   }
 
   async getClip(id: string): Promise<Clip | undefined> {
     const clip = this.clips.get(id);
-    
+
     if (!clip) {
       return undefined;
     }
-    
+
     // Check if clip is expired
     if (new Date() > clip.expiresAt) {
       this.clips.delete(id);
       return undefined;
     }
-    
+
     // Check if clip is revoked
     if (clip.isRevoked === "true") {
       return undefined;
     }
-    
+
     return clip;
   }
 
   async revokeClip(id: string): Promise<boolean> {
     const clip = this.clips.get(id);
-    
+
     if (!clip) {
       return false;
     }
-    
+
     // Mark as revoked instead of deleting
     const revokedClip: Clip = {
       ...clip,
       isRevoked: "true",
     };
-    
+
     this.clips.set(id, revokedClip);
     return true;
   }
@@ -76,22 +76,22 @@ export class MemStorage implements IStorage {
   async cleanupExpiredClips(): Promise<number> {
     const now = new Date();
     let deletedCount = 0;
-    
+
     const expiredIds: string[] = [];
-    
+
     // Check for expired clips
     for (const [id, clip] of Array.from(this.clips.entries())) {
       if (now > clip.expiresAt) {
         expiredIds.push(id);
       }
     }
-    
+
     // Remove expired clips
     expiredIds.forEach(id => {
       this.clips.delete(id);
       deletedCount++;
     });
-    
+
     return deletedCount;
   }
 }

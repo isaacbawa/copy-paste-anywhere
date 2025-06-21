@@ -6,6 +6,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import useCountdown from "@/hooks/use-countdown";
 import QRCode from "./qr-code";
+import PromoBanner from "./nonintrusiveAds/promobanner";
 
 interface SuccessViewProps {
   clipId: string;
@@ -17,7 +18,7 @@ export default function SuccessView({ clipId, expiresAt, onCreateNew }: SuccessV
   const [isRevoked, setIsRevoked] = useState(false);
   const { toast } = useToast();
   const timeRemaining = useCountdown(new Date(expiresAt));
-  
+
   const generatedLink = `${window.location.origin}/clip/${clipId}`;
 
   const revokeClipMutation = useMutation({
@@ -82,7 +83,7 @@ export default function SuccessView({ clipId, expiresAt, onCreateNew }: SuccessV
         </div>
 
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 text-center">
-          <Button 
+          <Button
             onClick={onCreateNew}
             className="bg-primary hover:bg-blue-700 text-white py-3 px-6 transition-all flex items-center justify-center gap-2 mx-auto"
           >
@@ -110,13 +111,13 @@ export default function SuccessView({ clipId, expiresAt, onCreateNew }: SuccessV
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Private Link</label>
             <div className="flex gap-2">
-              <Input 
-                type="text" 
+              <Input
+                type="text"
                 value={generatedLink}
                 readOnly
                 className="flex-1 bg-gray-50 font-mono text-sm"
               />
-              <Button 
+              <Button
                 onClick={copyLink}
                 className="bg-primary hover:bg-blue-700 text-white px-4 py-3 transition-all flex items-center gap-2"
               >
@@ -137,7 +138,7 @@ export default function SuccessView({ clipId, expiresAt, onCreateNew }: SuccessV
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button 
+            <Button
               onClick={onCreateNew}
               variant="secondary"
               className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 transition-all flex items-center justify-center gap-2"
@@ -145,7 +146,7 @@ export default function SuccessView({ clipId, expiresAt, onCreateNew }: SuccessV
               <span className="material-icons text-sm">add</span>
               Create New Clip
             </Button>
-            <Button 
+            <Button
               onClick={handleRevokeClip}
               disabled={revokeClipMutation.isPending}
               variant="destructive"

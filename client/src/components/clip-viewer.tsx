@@ -5,6 +5,7 @@ import useCountdown from "@/hooks/use-countdown";
 import { useClipInvalidation } from "@/hooks/use-websocket";
 import StrategicAd from "./strategic-ad";
 import Footer from "./footer";
+import PromoBanner from "./nonintrusiveAds/promobanner";
 
 interface ClipViewerProps {
   clip: {
@@ -62,6 +63,7 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
           <p className="text-sm text-gray-600 mt-1">Universal clipboard for instant text sharing</p>
         </div>
       </header>
+      <PromoBanner />
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="space-y-6">
@@ -130,16 +132,16 @@ export default function ClipViewer({ clip }: ClipViewerProps) {
               Create New Clip For Free
             </Button>
           </div>
-
+          <PromoBanner />
           {/* Strategic Ad Placement */}
-          <StrategicAd
+          {/* <StrategicAd
             title="Strategic Product Showcase Area"
             subtitle="Complementary tools for productivity"
-          />
+          /> */}
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

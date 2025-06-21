@@ -90,11 +90,12 @@ export default function ClipboardTool() {
           onCreateNew={handleCreateNewClip}
         />
 
+
         {/* Strategic Ad Placement 2 */}
-        <StrategicAd
+        {/* <StrategicAd
           title="Strategic Product Showcase Area #2"
           subtitle="Complementary tools or services"
-        />
+        /> */}
       </div>
     );
   }
@@ -178,20 +179,22 @@ export default function ClipboardTool() {
           </div>
 
           {/* Generate Link Button */}
-          <Button
-            onClick={handleGenerateLink}
-            disabled={!clipText.trim() || createClipMutation.isPending}
-            className="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 px-6 transition-all duration-200 flex items-center justify-center gap-2"
-          >
-            {createClipMutation.isPending ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-            ) : (
-              <>
-                <span className="material-icons">link</span>
-                <span>Generate Private Link</span>
-              </>
-            )}
-          </Button>
+          <div className="text-center mb-8">
+            <Button
+              onClick={handleGenerateLink}
+              disabled={!clipText.trim() || createClipMutation.isPending}
+              className="bg-primary hover:bg-blue-700 text-white font-medium py-3 px-6 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              {createClipMutation.isPending ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              ) : (
+                <>
+                  <span className="material-icons">link</span>
+                  <span>Generate Private Link</span>
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
