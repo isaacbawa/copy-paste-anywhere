@@ -2,6 +2,10 @@ import ClipboardTool from "@/components/clipboard-tool";
 import Footer from "@/components/footer";
 import PromoBanner from "@/components/nonintrusiveAds/promobanner";
 
+
+
+// I don't know why you would need to import StrategicAd, but it seems like a placeholder for future use.
+
 export default function Home() {
   return (
     <div>
