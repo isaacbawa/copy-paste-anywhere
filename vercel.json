@@ -1,0 +1,18 @@
+{
+    "functions": {
+        "api/clips.ts": {
+            "maxDuration": 10
+        },
+        "api/clips/[id].ts": {
+            "maxDuration": 10
+        }
+    },
+    "rewrites": [
+        {
+            "source": "/api/clips/(.*)",
+            "destination": "/api/clips/[id]"
+        }
+    ],
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist/public"
+}

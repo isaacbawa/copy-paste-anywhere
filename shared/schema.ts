@@ -15,5 +15,13 @@ export const insertClipSchema = createInsertSchema(clips).pick({
   expiresAt: true,
 });
 
+// Schema for API requests
+export const createClipRequestSchema = z.object({
+  content: z.string().min(1, "Content cannot be empty").max(10000, "Content too large"),
+  expiryDuration: z.enum(["2min", "5min", "10min", "1hour", "24hour"]).optional(),
+  customExpiry: z.string().optional(),
+});
+
 export type InsertClip = z.infer<typeof insertClipSchema>;
 export type Clip = typeof clips.$inferSelect;
+export type CreateClipRequest = z.infer<typeof createClipRequestSchema>;
