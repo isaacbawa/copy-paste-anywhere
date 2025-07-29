@@ -11,11 +11,11 @@ export default function Home() {
     <div>
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">
+        <div className="max-w-4xl mx-auto px-4 py-4 lg:flex lg:justify-center lg:items-center">
+          <h1 className="text-2xl font-bold text-gray-900 lg:mr-9">
             <span className="text-primary">Copy</span>and<span className="text-primary">Paste</span>Anywhere
           </h1>
-          <p className="text-sm text-gray-600 mt-1">Universal clipboard for instant text sharing</p>
+          <p className="text-sm text-gray-600 mt-1">Share Text Instantly Across Devices</p>
         </div>
       </header>
 
@@ -24,12 +24,6 @@ export default function Home() {
         <ClipboardTool />
 
         <PromoBanner />
-
-        {/* Strategic Ad Placement 1
-        <StrategicAd
-          title="Strategic Product Showcase Area #1"
-          subtitle="Non-intrusive promotional content placeholder"
-        /> */}
 
         {/* Features Section */}
         <div className="grid md:grid-cols-3 gap-6 mt-12">
@@ -55,13 +49,6 @@ export default function Home() {
             <p className="text-gray-600 text-sm">Works on any device with a browser. Phone, tablet, computer - anywhere.</p>
           </div>
         </div>
-
-        {/* Strategic Ad Placement 3
-        <StrategicAd
-          title="Strategic Product Showcase Area #3"
-          subtitle="Bottom placement for additional offerings"
-          className="mt-12"
-        /> */}
 
       </main>
 

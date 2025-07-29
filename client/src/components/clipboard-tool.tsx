@@ -89,13 +89,6 @@ export default function ClipboardTool() {
           expiresAt={generatedClip.expiresAt}
           onCreateNew={handleCreateNewClip}
         />
-
-
-        {/* Strategic Ad Placement 2 */}
-        {/* <StrategicAd
-          title="Strategic Product Showcase Area #2"
-          subtitle="Complementary tools or services"
-        /> */}
       </div>
     );
   }
@@ -104,26 +97,16 @@ export default function ClipboardTool() {
     <div className="space-y-6">
       {/* Hero Section */}
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Share Text Instantly Across Devices</h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Copy text on one device, get a private link, and paste it anywhere else.
-          No signup required. Secure, completely private and free.
-        </p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Copy text on one device and paste it anywhere you want.</h2>
       </div>
 
-      <PromoBanner />
-
-      {/* Strategic Ad Placement 1
-      <StrategicAd
-        title="Strategic Product Showcase Area #1"
-        subtitle="Non-intrusive promotional content placeholder"
-      /> */}
+      {/* <PromoBanner /> */}
 
       {/* Main Input Card */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
         <div className="space-y-4">
           {/* Text Input Area */}
-          <div>
+          <div className="flex flex-col items-center">
             <Label htmlFor="clipText" className="block text-sm font-medium text-gray-700 mb-2">
               Enter or paste your text
             </Label>
@@ -136,7 +119,7 @@ export default function ClipboardTool() {
             />
             <div className="text-xs text-gray-500 mt-1 flex items-center">
               <span className="material-icons text-sm mr-1">info</span>
-              <span>{clipText.length}</span> characters
+              <span>{clipText.length} </span> characters
             </div>
           </div>
 
