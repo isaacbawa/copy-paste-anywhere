@@ -80,7 +80,7 @@ const devStorage = new DevMemStorage();
 
 // Inline schema for development
 const createClipRequestSchema = z.object({
-    content: z.string().min(1, "Content cannot be empty").max(10000, "Content too large"),
+    content: z.string().min(1, "Content cannot be empty").max(1000000, "Content too large"),
     expiryDuration: z.enum(["2min", "5min", "10min", "1hour", "24hour"]).optional(),
     customExpiry: z.string().optional(),
 });
