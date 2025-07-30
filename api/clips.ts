@@ -3,7 +3,7 @@ export const config = {
 };
 
 import { z } from "zod";
-import { storage } from "../shared/production-storage";
+import { storage } from "../shared/edge-storage";
 import { createClipRequestSchema } from "../shared/schema";
 import { fromZodError } from "zod-validation-error";
 
@@ -22,31 +22,45 @@ function calculateExpiryDate(expiryDuration?: string, customExpiry?: string): Da
 }
 
 export default async function handler(request: Request): Promise<Response> {
-    if (request.method === "POST") {
-        try {
-            const body = await request.json();
-            const data = createClipRequestSchema.parse(body);
+    try {
+        if (request.method === "POST") {
+            try {
+                const body = await request.json();
+                console.log('📥 Create clip request:', { content: body.content?.length + ' chars', expiryDuration: body.expiryDuration });
+                
+                const data = createClipRequestSchema.parse(body);
 
-            const expiresAt = calculateExpiryDate(data.expiryDuration, data.customExpiry);
-            const { id, clip } = await storage.createClip({ content: data.content, expiresAt });
+                const expiresAt = calculateExpiryDate(data.expiryDuration, data.customExpiry);
+                const { id, clip } = await storage.createClip({ content: data.content, expiresAt });
 
-            return Response.json({ id, expiresAt: clip.expiresAt, success: true });
-        } catch (err) {
-            if (err instanceof z.ZodError) {
-                return Response.json({ success: false, message: fromZodError(err).message }, { status: 400 });
+                console.log('✅ Clip created successfully:', { id, expiresAt: clip.expiresAt });
+                return Response.json({ id, expiresAt: clip.expiresAt, success: true });
+            } catch (err) {
+                console.error('❌ Error creating clip:', err);
+                if (err instanceof z.ZodError) {
+                    return Response.json({ success: false, message: fromZodError(err).message }, { status: 400 });
+                }
+                return Response.json({ success: false, message: err instanceof Error ? err.message : "Invalid request" }, { status: 400 });
             }
-            return Response.json({ success: false, message: err instanceof Error ? err.message : "Invalid request" }, { status: 400 });
         }
-    }
 
-    if (request.method === "POST" && request.url?.endsWith("/cleanup")) {
-        try {
-            const deletedCount = await storage.cleanupExpiredClips();
-            return Response.json({ success: true, deletedCount });
-        } catch {
-            return Response.json({ success: false, message: "Cleanup failed" }, { status: 500 });
+        if (request.method === "POST" && request.url?.endsWith("/cleanup")) {
+            try {
+                const deletedCount = await storage.cleanupExpiredClips();
+                console.log('🧹 Cleanup completed:', { deletedCount });
+                return Response.json({ success: true, deletedCount });
+            } catch (error) {
+                console.error('❌ Cleanup failed:', error);
+                return Response.json({ success: false, message: "Cleanup failed" }, { status: 500 });
+            }
         }
-    }
 
-    return Response.json({ message: "Method not allowed" }, { status: 405 });
+        return Response.json({ message: "Method not allowed" }, { status: 405 });
+    } catch (error) {
+        console.error('❌ Unexpected error in clips handler:', error);
+        return Response.json({ 
+            success: false, 
+            message: "Internal server error" 
+        }, { status: 500 });
+    }
 }

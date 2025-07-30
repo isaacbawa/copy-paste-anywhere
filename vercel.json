@@ -1,9 +1,15 @@
 {
     "functions": {
         "api/clips.ts": {
-            "maxDuration": 10
+            "runtime": "edge",
+            "maxDuration": 30
         },
         "api/clips/[id].ts": {
+            "runtime": "edge", 
+            "maxDuration": 30
+        },
+        "api/debug.ts": {
+            "runtime": "edge",
             "maxDuration": 10
         }
     },
@@ -17,6 +23,25 @@
         {
             "source": "/(.*)",
             "destination": "/index.html"
+        }
+    ],
+    "headers": [
+        {
+            "source": "/api/(.*)",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                },
+                {
+                    "key": "Access-Control-Allow-Methods",
+                    "value": "GET, POST, DELETE, OPTIONS"
+                },
+                {
+                    "key": "Access-Control-Allow-Headers",
+                    "value": "Content-Type"
+                }
+            ]
         }
     ]
 }
