@@ -3,7 +3,7 @@ export const config = {
 };
 
 import { z } from "zod";
-import { storage } from "../shared/storage";
+import { storage } from "../shared/production-storage";
 import { createClipRequestSchema } from "../shared/schema";
 import { fromZodError } from "zod-validation-error";
 

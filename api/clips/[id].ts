@@ -2,7 +2,7 @@ export const config = {
   runtime: 'edge',
 };
 
-import { storage } from "../../shared/storage";
+import { storage } from "../../shared/production-storage";
 
 export default async function handler(request: Request) {
     const url = new URL(request.url);
