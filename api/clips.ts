@@ -1,6 +1,10 @@
+export const config = {
+  runtime: 'edge',
+};
+
+import { z } from "zod";
 import { storage } from "../shared/storage";
 import { createClipRequestSchema } from "../shared/schema";
-import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
 function calculateExpiryDate(expiryDuration?: string, customExpiry?: string): Date {
@@ -17,10 +21,10 @@ function calculateExpiryDate(expiryDuration?: string, customExpiry?: string): Da
     return new Date(now.getTime() + mins * 60 * 1000);
 }
 
-export default async function handler(req: Request) {
-    if (req.method === "POST") {
+export default async function handler(request: Request): Promise<Response> {
+    if (request.method === "POST") {
         try {
-            const body = await req.json();
+            const body = await request.json();
             const data = createClipRequestSchema.parse(body);
 
             const expiresAt = calculateExpiryDate(data.expiryDuration, data.customExpiry);
@@ -35,7 +39,7 @@ export default async function handler(req: Request) {
         }
     }
 
-    if (req.method === "POST" && req.url?.endsWith("/cleanup")) {
+    if (request.method === "POST" && request.url?.endsWith("/cleanup")) {
         try {
             const deletedCount = await storage.cleanupExpiredClips();
             return Response.json({ success: true, deletedCount });

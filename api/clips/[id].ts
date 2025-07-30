@@ -1,11 +1,15 @@
+export const config = {
+  runtime: 'edge',
+};
+
 import { storage } from "../../shared/storage";
 
-export default async function handler(req: Request) {
-    const url = new URL(req.url);
+export default async function handler(request: Request) {
+    const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
     const id = pathParts[pathParts.length - 1];
 
-    if (req.method === "GET") {
+    if (request.method === "GET") {
         const clip = await storage.getClip(id);
         if (!clip) {
             return Response.json({ success: false, message: "Clip not found or expired" }, { status: 404 });
@@ -18,7 +22,7 @@ export default async function handler(req: Request) {
         });
     }
 
-    if (req.method === "DELETE") {
+    if (request.method === "DELETE") {
         const revoked = await storage.revokeClip(id);
         if (!revoked) {
             return Response.json({ success: false, message: "Clip not found" }, { status: 404 });
