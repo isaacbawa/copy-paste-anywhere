@@ -1,11 +1,11 @@
-export const config = {
-  runtime: 'edge',
-};
-
 import { z } from "zod";
 import { storage } from "../shared/edge-storage";
 import { createClipRequestSchema } from "../shared/schema";
 import { fromZodError } from "zod-validation-error";
+
+export const config = {
+    runtime: 'edge',
+};
 
 function calculateExpiryDate(expiryDuration?: string, customExpiry?: string): Date {
     const now = new Date();
